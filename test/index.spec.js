@@ -170,13 +170,13 @@ describe('Promise Middleware:', () => {
       it('dispatches both pending and rejected', () => {
         const mockStore = configureStore([promiseMiddleware()]);
         const store = mockStore({});
-        store.dispatch(rejectingPromiseAction).then(() => {
+        return store.dispatch(rejectingPromiseAction).catch(() => {
           expect(store.getActions()).to.eql([pendingAction, rejectedAction]);
         });
       });
 
       it('re-dispatches rejected action with error and payload from error', () => {
-        store.dispatch(rejectingPromiseAction).then(() =>
+        return store.dispatch(rejectingPromiseAction).catch(() =>
           expect(lastMiddlewareModfies.spy).to.have.been.calledWith(rejectedAction)
         );
       });
@@ -187,7 +187,7 @@ describe('Promise Middleware:', () => {
           type: `${rejectingPromiseAction.type}_REJECTED`,
           error: true
         };
-        store.dispatch(rejectingPromiseAction).then(() =>
+        return store.dispatch(rejectingPromiseAction).catch(() =>
           expect(lastMiddlewareModfies.spy).to.have.been.calledWith(rejectedAction)
         );
       });
@@ -196,7 +196,7 @@ describe('Promise Middleware:', () => {
         const metaData = { fake: 'data' };
         rejectingPromiseAction.meta = metaData;
         rejectedAction.meta = metaData;
-        store.dispatch(rejectingPromiseAction).then(() =>
+        return store.dispatch(rejectingPromiseAction).catch(() =>
           expect(lastMiddlewareModfies.spy).to.have.been.calledWith(rejectedAction)
         );
       });
@@ -211,7 +211,7 @@ describe('Promise Middleware:', () => {
           dispatch({ ...action, foo: 'bar' });
         };
         rejectingPromiseAction.payload.promise = Promise.reject(thunkResolve);
-        store.dispatch(rejectingPromiseAction).then(() =>
+        return store.dispatch(rejectingPromiseAction).catch(() =>
           expect(lastMiddlewareModfies.spy).to.have.been.calledWith({
             type: `${rejectingPromiseAction.type}_REJECTED`,
             error: true,
@@ -226,7 +226,7 @@ describe('Promise Middleware:', () => {
           promiseTypeSuffixes: ['', '', customPrefix]
         });
         rejectedAction.type = `${rejectingPromiseAction.type}_${customPrefix}`;
-        store.dispatch(rejectingPromiseAction).then(() =>
+        return store.dispatch(rejectingPromiseAction).catch(() =>
           expect(lastMiddlewareModfies.spy).to.have.been.calledWith(rejectedAction)
         );
       });
@@ -238,7 +238,7 @@ describe('Promise Middleware:', () => {
         rejectedAction.type = `${rejectingPromiseAction.type}_${customPrefix}`;
         // FIXME: Test leak, should the promiseTypeSuffixes be in other actions?
         rejectedAction.meta = actionMeta;
-        store.dispatch(rejectingPromiseAction).then(() =>
+        return store.dispatch(rejectingPromiseAction).catch(() =>
           expect(lastMiddlewareModfies.spy).to.have.been.calledWith(rejectedAction)
         );
       });

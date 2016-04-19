@@ -44,7 +44,7 @@ export default function promiseMiddleware(config = {}) {
       promise.then(
         (resolved = {}) => {
           const partialFulfilledAction = getResolvedPartialAction()
-          return dispatch(
+          dispatch(
             isThunk(resolved)
               // make a thunk with a partial action
               ? resolved.bind(null, partialFulfilledAction)
@@ -54,7 +54,7 @@ export default function promiseMiddleware(config = {}) {
         },
         (rejected = {}) => {
           const partialRejectAction = getResolvedPartialAction(true)
-          return dispatch(
+          dispatch(
             isThunk(rejected)
               // make a thunk with a partial action
               ? rejected.bind(null, partialRejectAction)
