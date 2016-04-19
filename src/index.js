@@ -5,8 +5,7 @@ const defaultTypes = [ 'PENDING', 'FULFILLED', 'REJECTED' ]
 export default function promiseMiddleware(config = {}) {
   const promiseTypeSuffixes = config.promiseTypeSuffixes || defaultTypes
 
-  return (_ref) => {
-    const dispatch = _ref.dispatch
+  return ({ dispatch }) => {
 
     return (next) => (action) => {
       // continue onto other middleware if not a promise
@@ -17,7 +16,11 @@ export default function promiseMiddleware(config = {}) {
       const { type, payload, meta } = action
       const { promise, data } = payload
       // allow configuring of action type suffixes
-      const [ PENDING, FULFILLED, REJECTED ] = (meta || {}).promiseTypeSuffixes || promiseTypeSuffixes
+      const [
+        PENDING,
+        FULFILLED,
+        REJECTED
+      ] = (meta || {}).promiseTypeSuffixes || promiseTypeSuffixes
 
       /**
        * Dispatch the first async handler. This tells the
@@ -46,7 +49,7 @@ export default function promiseMiddleware(config = {}) {
           const partialFulfilledAction = getResolvedPartialAction()
           dispatch(
             isThunk(resolved)
-              // make a thunk with a partial action
+              // bind the partial action to the thunk and dispatch it
               ? resolved.bind(null, partialFulfilledAction)
               // merge the partial action with the resolved payload if it exists
               : { ...partialFulfilledAction, ...!!resolved && { payload: resolved } }
@@ -56,7 +59,7 @@ export default function promiseMiddleware(config = {}) {
           const partialRejectAction = getResolvedPartialAction(true)
           dispatch(
             isThunk(rejected)
-              // make a thunk with a partial action
+              // bind the partial action to the thunk and dispatch it
               ? rejected.bind(null, partialRejectAction)
               // merge the partial action with the resolved payload if it exists
               : { ...partialRejectAction, ...!!rejected && { payload: rejected } }
